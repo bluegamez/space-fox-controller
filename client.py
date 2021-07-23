@@ -8,7 +8,6 @@ import grpc
 import controller_pb2
 import controller_pb2_grpc
 import sys
-import uuid
 
 from enum import Enum
 from typing import List, Iterable
@@ -26,7 +25,21 @@ type_mapping = {
 
 q = queue.Queue()
 
-controllerId = uuid.uuid4()
+def getserial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+
+  return cpuserial
+
+controllerId = getserial()
 
 def actions() -> Iterable[controller_pb2.Action]:
     while True:
@@ -67,6 +80,8 @@ def got_info(items):
 client.get_info(got_info)
 
 client.on_new_verified_button = got_button
+
+print("Starting controller with id", controllerId)
 
 x = threading.Thread(target=sender, args=(1,))
 x.start()
