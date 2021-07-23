@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "github.com/bluegamez/space-fox/api";
+
+package protobuf;
+
+service SpaceFox {
+  rpc ControllerActions (stream Action) returns (EndOfStream) {}
+}
+
+message Action {
+  enum Button {
+    UNKNOWN_BUTTON = 0;
+    LEFT = 1;
+    RIGHT = 2;
+  }
+  enum Type {
+    UNKNOWN_TYPE = 0;
+    SINGLE_CLICK = 1;
+    DOUBLE_CLICK = 2;
+    LONG_PRESS = 3;
+  }
+  string controllerId = 1;
+  Button button = 2;
+  Type type = 3;
+}
+
+message EndOfStream {}
